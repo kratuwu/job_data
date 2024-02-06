@@ -1,53 +1,58 @@
 package com.example.demo.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
+import lombok.RequiredArgsConstructor;
+
+import java.security.Timestamp;
+
+@Data
 @Entity
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "SALARY_SURVEY")
-@Getter
 public class SalarySurveyEntity {
     @Id
-    Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "Timestamp")
-    String timestamp;
+    private String timestamp;
 
     @Column(name = "Employer")
-    String employer;
+    private String employer;
 
     @Column(name = "Location")
-    String location;
+    private String location;
 
     @Column(name = "Job Title")
-    String jobTitle;
+    private String jobTitle;
 
     @Column(name = "Years at Employer")
-    String yearsAtEmployer;
+    private String yearsAtEmployer;
 
     @Column(name = "Years of Experience")
-    String yearsOfExperience;
+    private String yearsOfExperience;
 
     @Column(name = "Salary")
-    String salary;
+    private String salary;
 
     @Column(name = "Signing Bonus")
-    String signingBonus;
+    private String signingBonus;
 
     @Column(name = "Annual Bonus")
-    String annualBonus;
+    private String annualBonus;
 
     @Column(name = "Annual Stock Value/Bonus")
-    String annualStockValueBonus;
+    private String annualStockValueBonus;
 
-    @Column(name="Gender")
-    String gender;
+    @Column(name = "Gender")
+    private String gender;
 
-    @Column(name="Additional Comments")
-    String additionalComments;
+    @Column(name = "Additional Comments")
+    private String additionalComments;
 
 }
