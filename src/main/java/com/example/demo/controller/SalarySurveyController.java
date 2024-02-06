@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/job_data")
+@RequestMapping(value = "/salary-surveys")
 public class SalarySurveyController {
 
     @Autowired
@@ -27,7 +27,7 @@ public class SalarySurveyController {
     @GetMapping
     public ResponseEntity<List<SalarySurveyDto>> getJobDataList(
                                                 @RequestParam(name = "fields", defaultValue = "") String fields,
-                                                @RequestParam(defaultValue = "job_title") String sort,
+                                                @RequestParam(defaultValue = "timestamp") String sort,
                                                 @RequestParam(defaultValue = "ASC") String sort_type) {
         String camelCaseSort = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, sort);
         Sort.Direction direction = sort_type.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
