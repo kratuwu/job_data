@@ -26,14 +26,16 @@ public class SalarySurveyController {
     public ResponseEntity<List<SalarySurveyDto>> getJobDataList(
                                                 @RequestParam(name = "fields", defaultValue = "") String fields,
                                                 @RequestParam(defaultValue = "timestamp") String sort,
-                                                @RequestParam(defaultValue = "ASC") String sort_type) {
+                                                @RequestParam(defaultValue = "ASC") String sort_type,
+                                                @RequestParam(value = "gender", required = false) String gender,
+                                                @RequestParam(value = "job_title", required = false) String jobTitle) {
         String camelCaseSort = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, sort);
         Sort.Direction direction = sort_type.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
-
         Sort sortable = Sort.by(direction, camelCaseSort);
-        List<SalarySurveyDto>  jobDataList = salarySurveyService.getSalarySurvey(sortable, List.of(fields.split(","))
-                .stream().map(field->CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, field))
-                .toList());
+
+        List<String> camelFields = List.of(fields.split(",")).stream().map(field -> CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, field)).toList();
+
+        List<SalarySurveyDto>  jobDataList = salarySurveyService.getSalarySurvey(sortable, camelFields, gender, jobTitle);
 
         return new ResponseEntity<>(jobDataList, HttpStatus.OK);
     }

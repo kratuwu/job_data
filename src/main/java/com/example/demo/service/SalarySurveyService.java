@@ -4,9 +4,10 @@ import com.example.demo.entity.SalarySurveyEntity;
 import com.example.demo.mapper.SalarySurveyMapper;
 import com.example.demo.repository.SalarySurveyRepository;
 import com.example.demo.response.SalarySurveyDto;
-import jakarta.persistence.EntityManager;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +23,13 @@ public class SalarySurveyService {
 
     private SalarySurveyMapper salarySurveyMapper = Mappers.getMapper( SalarySurveyMapper.class );
 
-    public List<SalarySurveyDto> getSalarySurvey(Sort sortable, List<String> fields) {
-        List<SalarySurveyEntity> salarySurveyEntities = salarySurveyRepository.findAll(sortable);
+    public List<SalarySurveyDto> getSalarySurvey(Sort sortable, List<String> fields, String gender, String jobTitle) {
+        SalarySurveyEntity salarySurvey = new SalarySurveyEntity();
+        salarySurvey.setGender(gender);
+        salarySurvey.setJobTitle(jobTitle);
+        Example<SalarySurveyEntity> example = Example.of(salarySurvey, ExampleMatcher.matchingAll());
+
+        List<SalarySurveyEntity> salarySurveyEntities = salarySurveyRepository.findAll(example, sortable);
         return mapToDto(salarySurveyEntities, fields);
     }
 
