@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.response.SalarySurveyDto;
 import com.example.demo.service.SalarySurveyService;
 import com.google.common.base.CaseFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,20 +22,20 @@ public class SalarySurveyController {
     private SalarySurveyService salarySurveyService;
 
     @GetMapping
-    public ResponseEntity<List<SalarySurveyDto>> getJobDataList(
+    public ResponseEntity<List<Object>> getJobDataList(
                                                 @RequestParam(name = "fields", defaultValue = "") String fields,
                                                 @RequestParam(defaultValue = "timestamp") String sort,
                                                 @RequestParam(value = "sor_type", defaultValue = "ASC") String sortType,
                                                 @RequestParam(value = "gender", required = false) String gender,
                                                 @RequestParam(value = "job_title", required = false) String jobTitle) {
 
-        List<SalarySurveyDto>  jobDataList = List.of();
+        List<Object>  jobDataList;
 
         if(nonNull(jobTitle) || nonNull(gender)){
             jobDataList = salarySurveyService.getFilteringSalarySurvey(sort, sortType);
         } else if(nonNull(fields)) {
             List<String> camelFields = List.of(fields.split(",")).stream().map(field -> CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, field)).toList();
-            salarySurveyService.getFilteringFieldsSalarySurvey(camelFields);
+            jobDataList = salarySurveyService.getFilteringFieldsSalarySurvey(camelFields);
         } else {
             jobDataList = salarySurveyService.getSortingSalarySurvey(sort, sortType);
         }
