@@ -8,9 +8,9 @@ import java.util.List;
 
 @Repository
 public interface SalarySurveyRepository extends JpaRepository<SalarySurveyEntity, String> {
-    List<SalarySurveyEntity> findBySalaryGreaterThanEqual(Double minSalary);
-
-    List<SalarySurveyEntity> findBySalaryLessThanEqual(Double maxSalary);
-
-    List<SalarySurveyEntity> findBySalaryBetween(Double minSalary, Double maxSalary);
+//    List<SalarySurveyEntity> findBySalaryGreaterThanEqual(Double minSalary);
+//
+//    List<SalarySurveyEntity> findBySalaryLessThanEqual(Double maxSalary);
+//
+//    List<SalarySurveyEntity> findBySalaryBetween(Double minSalary, Double maxSalary);
 }

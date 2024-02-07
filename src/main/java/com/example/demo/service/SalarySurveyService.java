@@ -44,15 +44,16 @@ public class SalarySurveyService {
     }
 
     private List<Object> filterSalaryLength(Double minSalary, Double maxSalary){
-        List<SalarySurveyEntity> bySalaryBetween;
-        if (minSalary != null && maxSalary != null) {
-            bySalaryBetween = salarySurveyRepository.findBySalaryBetween(minSalary, maxSalary);
-        } else if (minSalary != null) {
-            bySalaryBetween =  salarySurveyRepository.findBySalaryGreaterThanEqual(minSalary);
-        } else {
-            bySalaryBetween =  salarySurveyRepository.findBySalaryLessThanEqual(maxSalary);
-        }
-        return filterByFields(bySalaryBetween, List.of("salary"));
+//        TODO: Uncomment after clean up data for salary to be type double
+//        List<SalarySurveyEntity> bySalaryBetween;
+//        if (minSalary != null && maxSalary != null) {
+//            bySalaryBetween = salarySurveyRepository.findBySalaryBetween(minSalary, maxSalary);
+//        } else if (minSalary != null) {
+//            bySalaryBetween =  salarySurveyRepository.findBySalaryGreaterThanEqual(minSalary);
+//        } else {
+//            bySalaryBetween =  salarySurveyRepository.findBySalaryLessThanEqual(maxSalary);
+//        }
+        return filterByFields(salarySurveyRepository.findAll(), List.of("salary"));
     }
 
     private List<Object> filterGenderAndJobTitle(String gender, String jobTitle){
