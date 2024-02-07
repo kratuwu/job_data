@@ -15,13 +15,14 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.example.demo.utils.FieldFilterUtil.filterByFields;
+import static java.util.Objects.nonNull;
+
 @Service
 public class SalarySurveyService {
 
     @Autowired
     private SalarySurveyRepository salarySurveyRepository;
-
-    private SalarySurveyMapper salarySurveyMapper = Mappers.getMapper(SalarySurveyMapper.class);
 
     public List<Object> getSortingSalarySurvey(String sort, String sortType) {
 
@@ -30,38 +31,46 @@ public class SalarySurveyService {
         Sort sortable = Sort.by(direction, camelCaseSort);
 
         List<SalarySurveyEntity> salarySurveyEntities = salarySurveyRepository.findAll(sortable);
-        return (List<Object>) (List<?>) salarySurveyMapper.salarySurveyToSalarySurveyDto(salarySurveyEntities);
+        return filterByFields(salarySurveyEntities, List.of());
     }
 
     public List<Object> getFilteringFieldsSalarySurvey(List<String> fields) {
         List<SalarySurveyEntity> salarySurveyEntities = salarySurveyRepository.findAll();
-        return mapToDto(salarySurveyEntities, fields);
+        return filterByFields(salarySurveyEntities, fields);
     }
 
-    public List<Object> getFilteringSalarySurvey(String gender, String jobTitle) {
-        SalarySurveyEntity salarySurvey = new SalarySurveyEntity();
-        salarySurvey.setGender(gender);
-        salarySurvey.setJobTitle(jobTitle);
-        Example<SalarySurveyEntity> example = Example.of(salarySurvey, ExampleMatcher.matchingAny());
-        List<SalarySurveyEntity> salarySurveyEntities = salarySurveyRepository.findAll(example);
-        return (List<Object>) (List<?>) salarySurveyMapper.salarySurveyToSalarySurveyDto(salarySurveyEntities);
-    }
-
-    private List<Object> mapToDto(List<SalarySurveyEntity> salarySurveyEntities, List<String> fields) {
-        if (fields == null || fields.isEmpty()) {
-            return (List<Object>) (List<?>) salarySurveyMapper.salarySurveyToSalarySurveyDto(salarySurveyEntities);
+    public List<Object> getFilteringSalarySurvey(String gender, String jobTitle, Double minSalary, Double maxSalary) {
+        if (minSalary != null || maxSalary != null) {
+            return filterSalaryLength(minSalary, maxSalary);
+        } else {
+            return filterGenderAndJobTitle(gender, jobTitle);
         }
-        return salarySurveyEntities.stream().map(survey -> {
-            Map map = new HashMap();
-            for (String fieldName : fields) {
-                try {
-                    Field field = SalarySurveyEntity.class.getDeclaredField(fieldName);
-                    field.setAccessible(true);
-                    map.put(fieldName, field.get(survey));
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                }
-            }
-            return map;
-        }).collect(Collectors.toList());
+    }
+
+    private List<Object> filterSalaryLength(Double minSalary, Double maxSalary){
+        List<SalarySurveyEntity> bySalaryBetween;
+        if (minSalary != null && maxSalary != null) {
+            bySalaryBetween = salarySurveyRepository.findBySalaryBetween(minSalary, maxSalary);
+        } else if (minSalary != null) {
+            bySalaryBetween =  salarySurveyRepository.findBySalaryGreaterThanEqual(minSalary);
+        } else {
+            bySalaryBetween =  salarySurveyRepository.findBySalaryLessThanEqual(maxSalary);
+        }
+        return filterByFields(bySalaryBetween, List.of("salary"));
+    }
+
+    private List<Object> filterGenderAndJobTitle(String gender, String jobTitle){
+        SalarySurveyEntity salarySurvey = new SalarySurveyEntity();
+        List<String> fields = List.of();
+        if(nonNull(gender)){
+            salarySurvey.setGender(gender);
+            fields.add("gender");
+        }
+        if(nonNull(jobTitle)){
+            salarySurvey.setGender(jobTitle);
+            fields.add("jobTitle");
+        }
+        Example<SalarySurveyEntity> example = Example.of(salarySurvey, ExampleMatcher.matchingAny());
+        return filterByFields(salarySurveyRepository.findAll(example), fields);
     }
 }

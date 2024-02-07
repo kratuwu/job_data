@@ -23,16 +23,18 @@ public class SalarySurveyController {
 
     @GetMapping
     public ResponseEntity<List<Object>> getJobDataList(
-                                                @RequestParam(name = "fields", defaultValue = "") String fields,
-                                                @RequestParam(defaultValue = "timestamp") String sort,
-                                                @RequestParam(value = "sor_type", defaultValue = "ASC") String sortType,
+                                                @RequestParam(name = "fields", defaultValue = "", required = false) String fields,
+                                                @RequestParam(defaultValue = "timestamp", required = false) String sort,
+                                                @RequestParam(value = "sor_type", defaultValue = "ASC", required = false) String sortType,
                                                 @RequestParam(value = "gender", required = false) String gender,
-                                                @RequestParam(value = "job_title", required = false) String jobTitle) {
+                                                @RequestParam(value = "job_title", required = false) String jobTitle,
+                                                @RequestParam(required = false) Double minSalary,
+                                                @RequestParam(required = false) Double maxSalary) {
 
         List<Object>  jobDataList;
 
         if(nonNull(jobTitle) || nonNull(gender)){
-            jobDataList = salarySurveyService.getFilteringSalarySurvey(sort, sortType);
+            jobDataList = salarySurveyService.getFilteringSalarySurvey(sort, sortType, minSalary, maxSalary);
         } else if(nonNull(fields)) {
             List<String> camelFields = List.of(fields.split(",")).stream().map(field -> CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, field)).toList();
             jobDataList = salarySurveyService.getFilteringFieldsSalarySurvey(camelFields);
