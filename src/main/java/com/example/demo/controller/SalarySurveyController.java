@@ -1,11 +1,9 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.SalarySurveyEntity;
 import com.example.demo.response.SalarySurveyDto;
 import com.example.demo.service.SalarySurveyService;
 import com.google.common.base.CaseFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static java.util.Objects.nonNull;
 
 @RestController
 @RequestMapping(value = "/salary-surveys")
@@ -26,16 +26,20 @@ public class SalarySurveyController {
     public ResponseEntity<List<SalarySurveyDto>> getJobDataList(
                                                 @RequestParam(name = "fields", defaultValue = "") String fields,
                                                 @RequestParam(defaultValue = "timestamp") String sort,
-                                                @RequestParam(defaultValue = "ASC") String sort_type,
+                                                @RequestParam(value = "sor_type", defaultValue = "ASC") String sortType,
                                                 @RequestParam(value = "gender", required = false) String gender,
                                                 @RequestParam(value = "job_title", required = false) String jobTitle) {
-        String camelCaseSort = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, sort);
-        Sort.Direction direction = sort_type.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Sort sortable = Sort.by(direction, camelCaseSort);
 
-        List<String> camelFields = List.of(fields.split(",")).stream().map(field -> CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, field)).toList();
+        List<SalarySurveyDto>  jobDataList = List.of();
 
-        List<SalarySurveyDto>  jobDataList = salarySurveyService.getSalarySurvey(sortable, camelFields, gender, jobTitle);
+        if(nonNull(jobTitle) || nonNull(gender)){
+            jobDataList = salarySurveyService.getFilteringSalarySurvey(sort, sortType);
+        } else if(nonNull(fields)) {
+            List<String> camelFields = List.of(fields.split(",")).stream().map(field -> CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, field)).toList();
+            salarySurveyService.getFilteringFieldsSalarySurvey(camelFields);
+        } else {
+            jobDataList = salarySurveyService.getSortingSalarySurvey(sort, sortType);
+        }
 
         return new ResponseEntity<>(jobDataList, HttpStatus.OK);
     }
