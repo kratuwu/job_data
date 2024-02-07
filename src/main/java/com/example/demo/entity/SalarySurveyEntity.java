@@ -37,7 +37,7 @@ public class SalarySurveyEntity {
     private String yearsOfExperience;
 
     @Column(name = "Salary")
-    private String salary;
+    private Double salary;
 
     @Column(name = "Signing Bonus")
     private String signingBonus;
